@@ -438,6 +438,9 @@
     "verify_set_rejected": {
       "message": "L'appareil a rejeté la valeur {requested} pour {feature}"
     },
+    "command_failed": {
+      "message": "La Bravia Theatre n'a pas confirmé la commande : {command}"
+    },
     "verify_read_failed": {
       "message": "Impossible de vérifier {feature} après avoir défini {requested}"
     },

@@ -438,6 +438,9 @@
     "verify_set_rejected": {
       "message": "機器が {feature} の値 {requested} を拒否しました"
     },
+    "command_failed": {
+      "message": "Bravia Theatre がコマンド ({command}) に応答しませんでした"
+    },
     "verify_read_failed": {
       "message": "{requested} を設定した後、{feature} を確認できませんでした"
     },

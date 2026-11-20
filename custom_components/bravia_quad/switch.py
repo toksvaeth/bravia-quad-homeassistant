@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, NoReturn
 
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.const import EntityCategory
@@ -73,6 +73,20 @@ _LOGGER = logging.getLogger(__name__)
 
 SCAN_INTERVAL = timedelta(seconds=60)
 PARALLEL_UPDATES = 1
+
+
+def _raise_command_failed(command: str) -> NoReturn:
+    """
+    Fail the service call for a command the device did not acknowledge.
+
+    Callers (scripts, the UI) then see the failure instead of a switch that
+    silently stays in its old state.
+    """
+    raise HomeAssistantError(
+        translation_domain=DOMAIN,
+        translation_key="command_failed",
+        translation_placeholders={"command": command},
+    )
 
 
 async def async_setup_entry(
@@ -159,7 +173,7 @@ class BraviaQuadPowerSwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = True
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to turn on Bravia Quad")
+            _raise_command_failed("turn on")
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn the device off."""
@@ -168,7 +182,7 @@ class BraviaQuadPowerSwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = False
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to turn off Bravia Quad")
+            _raise_command_failed("turn off")
 
     async def async_update(self) -> None:
         """Update the switch state."""
@@ -207,7 +221,7 @@ class BraviaQuadHdmiCecSwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = True
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to enable HDMI CEC")
+            _raise_command_failed("enable HDMI CEC")
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Disable HDMI CEC."""
@@ -216,7 +230,7 @@ class BraviaQuadHdmiCecSwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = False
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to disable HDMI CEC")
+            _raise_command_failed("disable HDMI CEC")
 
     async def async_update(self) -> None:
         """Update HDMI CEC state."""
@@ -255,7 +269,7 @@ class BraviaQuadAutoStandbySwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = True
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to enable auto standby")
+            _raise_command_failed("enable auto standby")
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Disable auto standby."""
@@ -264,7 +278,7 @@ class BraviaQuadAutoStandbySwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = False
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to disable auto standby")
+            _raise_command_failed("disable auto standby")
 
     async def async_update(self) -> None:
         """Update auto standby state."""
@@ -303,7 +317,7 @@ class BraviaQuadVoiceEnhancerSwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = True
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to turn on voice enhancer")
+            _raise_command_failed("turn on voice enhancer")
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn voice enhancer off."""
@@ -312,7 +326,7 @@ class BraviaQuadVoiceEnhancerSwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = False
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to turn off voice enhancer")
+            _raise_command_failed("turn off voice enhancer")
 
     async def async_update(self) -> None:
         """Update the switch state."""
@@ -351,7 +365,7 @@ class BraviaQuadSoundFieldSwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = True
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to turn on sound field")
+            _raise_command_failed("turn on sound field")
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn sound field off."""
@@ -360,7 +374,7 @@ class BraviaQuadSoundFieldSwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = False
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to turn off sound field")
+            _raise_command_failed("turn off sound field")
 
     async def async_update(self) -> None:
         """Update the switch state."""
@@ -399,7 +413,7 @@ class BraviaQuadNightModeSwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = True
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to turn on night mode")
+            _raise_command_failed("turn on night mode")
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn night mode off."""
@@ -408,7 +422,7 @@ class BraviaQuadNightModeSwitch(BraviaQuadNotificationMixin, SwitchEntity):
             self._attr_is_on = False
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to turn off night mode")
+            _raise_command_failed("turn off night mode")
 
     async def async_update(self) -> None:
         """Update the switch state."""
@@ -448,7 +462,7 @@ class BraviaQuadAdvancedAutoVolumeSwitch(BraviaQuadNotificationMixin, SwitchEnti
             self._attr_is_on = True
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to turn on Advanced Auto Volume")
+            _raise_command_failed("turn on Advanced Auto Volume")
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn Advanced Auto Volume off."""
@@ -457,7 +471,7 @@ class BraviaQuadAdvancedAutoVolumeSwitch(BraviaQuadNotificationMixin, SwitchEnti
             self._attr_is_on = False
             self.async_write_ha_state()
         else:
-            _LOGGER.error("Failed to turn off Advanced Auto Volume")
+            _raise_command_failed("turn off Advanced Auto Volume")
 
     async def async_update(self) -> None:
         """Update the switch state."""
@@ -493,8 +507,7 @@ class BraviaQuadAutoUpdateSwitch(BraviaQuadNotificationMixin, SwitchEntity):
         """Enable auto update."""
         requested = AUTO_UPDATE_ON
         if not await self._client.async_set_auto_update(requested):
-            _LOGGER.error("Failed to enable auto update")
-            return
+            _raise_command_failed("enable auto update")
         try:
             actual = await self._client.async_get_auto_update()
         except (OSError, TimeoutError) as err:
@@ -519,8 +532,7 @@ class BraviaQuadAutoUpdateSwitch(BraviaQuadNotificationMixin, SwitchEntity):
         """Disable auto update."""
         requested = AUTO_UPDATE_OFF
         if not await self._client.async_set_auto_update(requested):
-            _LOGGER.error("Failed to disable auto update")
-            return
+            _raise_command_failed("disable auto update")
         try:
             actual = await self._client.async_get_auto_update()
         except (OSError, TimeoutError) as err:
@@ -575,8 +587,7 @@ class BraviaQuadNetBtStandbySwitch(BraviaQuadNotificationMixin, SwitchEntity):
         """Enable network/Bluetooth standby."""
         requested = NET_BT_STANDBY_ON
         if not await self._client.async_set_net_bt_standby(requested):
-            _LOGGER.error("Failed to enable network/Bluetooth standby")
-            return
+            _raise_command_failed("enable network/Bluetooth standby")
         try:
             actual = await self._client.async_get_net_bt_standby()
         except (OSError, TimeoutError) as err:
@@ -601,8 +612,7 @@ class BraviaQuadNetBtStandbySwitch(BraviaQuadNotificationMixin, SwitchEntity):
         """Disable network/Bluetooth standby."""
         requested = NET_BT_STANDBY_OFF
         if not await self._client.async_set_net_bt_standby(requested):
-            _LOGGER.error("Failed to disable network/Bluetooth standby")
-            return
+            _raise_command_failed("disable network/Bluetooth standby")
         try:
             actual = await self._client.async_get_net_bt_standby()
         except (OSError, TimeoutError) as err:
@@ -660,7 +670,7 @@ class BraviaQuadVoiceZoomSwitch(BraviaQuadNotificationMixin, SwitchEntity):
         if success:
             await self._verify_state()
         else:
-            _LOGGER.error("Failed to enable voice zoom")
+            _raise_command_failed("enable voice zoom")
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Disable voice zoom."""
@@ -668,7 +678,7 @@ class BraviaQuadVoiceZoomSwitch(BraviaQuadNotificationMixin, SwitchEntity):
         if success:
             await self._verify_state()
         else:
-            _LOGGER.error("Failed to disable voice zoom")
+            _raise_command_failed("disable voice zoom")
 
     async def _verify_state(self) -> None:
         """Re-read state from device to verify SET was accepted."""
@@ -714,8 +724,7 @@ class BraviaQuadExternalControlSwitch(BraviaQuadNotificationMixin, SwitchEntity)
         """Enable external control."""
         requested = EXTERNAL_CONTROL_ON
         if not await self._client.async_set_external_control(requested):
-            _LOGGER.error("Failed to enable external control")
-            return
+            _raise_command_failed("enable external control")
         try:
             actual = await self._client.async_get_external_control()
         except (OSError, TimeoutError) as err:
@@ -740,8 +749,7 @@ class BraviaQuadExternalControlSwitch(BraviaQuadNotificationMixin, SwitchEntity)
         """Disable external control."""
         requested = EXTERNAL_CONTROL_OFF
         if not await self._client.async_set_external_control(requested):
-            _LOGGER.error("Failed to disable external control")
-            return
+            _raise_command_failed("disable external control")
         try:
             actual = await self._client.async_get_external_control()
         except (OSError, TimeoutError) as err:
