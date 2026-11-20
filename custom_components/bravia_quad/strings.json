@@ -414,6 +414,9 @@
     "verify_set_rejected": {
       "message": "Device rejected {feature} value {requested}"
     },
+    "command_failed": {
+      "message": "Bravia Theatre did not acknowledge the command to {command}"
+    },
     "verify_read_failed": {
       "message": "Failed to verify {feature} after setting {requested}"
     },
