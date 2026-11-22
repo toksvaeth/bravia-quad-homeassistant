@@ -21,7 +21,6 @@ from homeassistant.const import (
 )
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.restore_state import RestoreEntity
-from pybravia_connect import int_range_from_capability
 
 from .const import (
     AV_SYNC_STEP,
@@ -52,6 +51,10 @@ from .entity import (
     entity_unique_id,
     get_device_info,
 )
+from .grpc.get_capabilities_response import (
+    CapabilityMeta,
+    int_range_from_capability,
+)
 from .grpc_entity_registry import EntitySpec, entity_spec_for_mapping
 from .grpc_mapping import (
     GrpcTcpMapping,
@@ -81,7 +84,6 @@ from .transport import GRPC_PATH_SW_STATUS, subwoofer_currently_linked
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
-    from pybravia_connect import CapabilityMeta
 
     from . import BraviaQuadConfigEntry
     from .bravia_grpc_client import BraviaGrpcClientAsync
@@ -356,11 +358,9 @@ class BraviaGrpcMappedSelect(
                 },
             )
         await _async_exec(self._grpc_client, self._spec, option)
-        # Notify-only paths never get a stream delta; merge optimistic value
-        # before sync so we do not write the stale Seeds/restore cache to HA.
+        self._sync_select_from_notify()
         if grpc_path_needs_ha_restore(self._grpc_path):
             self._grpc_client.merge_notify_cache({self._grpc_path: option})
-        self._sync_select_from_notify()
         self.async_write_ha_state()
 
     def _sync_select_from_notify(self) -> None:
@@ -467,9 +467,6 @@ class BraviaGrpcMappedNumber(BraviaGrpcFeatureAvailabilityMixin, NumberEntity):
         """Set the number value."""
         int_value = int(value)
         await _async_exec(self._grpc_client, self._spec, int_value)
-        # Exec does not update notify_state; without an optimistic merge,
-        # sync rewrites the stale cache (often omit-zero 0) back to HA.
-        self._grpc_client.merge_notify_cache({self._grpc_path: int_value})
         self._sync_number_from_notify()
         self.async_write_ha_state()
 

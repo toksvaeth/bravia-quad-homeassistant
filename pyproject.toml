@@ -7,7 +7,7 @@ license = "MIT"
 requires-python = ">=3.14.2"
 dependencies = [
     "homeassistant>=2025.12.2",
-    "pycares<5.2.2",  # pycares 5.0.0 is incompatible with aiodns 3.5.0 (upstream bug)
+    "pycares<5.0.2",  # pycares 5.0.0 is incompatible with aiodns 3.5.0 (upstream bug)
     "aiohttp>=3.8.0",
     "voluptuous>=0.13.0",
 ]
@@ -23,8 +23,7 @@ dev = [
     "pytest-homeassistant-custom-component>=0.13.297",
     "pytest-xdist>=3.8.0",
     "ruff>=0.14.0",
-    "pybravia-connect==0.1.0a11",
-    "sony-cisip2==0.1.0a1",
+    "grpcio>=1.76.0",
     "grpcio-tools>=1.76.0",
     "requests>=2.32.0",
 ]
@@ -39,7 +38,11 @@ testpaths = ["tests"]
 python-version = "3.14"
 
 [tool.ty.src]
-exclude = []
+exclude = [
+    "custom_components/bravia_quad/grpc/bravia_control_pb2.py",
+    "custom_components/bravia_quad/grpc/bravia_control_pb2_grpc.py",
+    "custom_components/bravia_quad/grpc/client.py",
+]
 
 [tool.ty.rules]
 invalid-argument-type = "warn"

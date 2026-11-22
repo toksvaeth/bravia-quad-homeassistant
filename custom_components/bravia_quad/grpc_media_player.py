@@ -17,7 +17,6 @@ from homeassistant.components.media_player import (
     MediaType,
 )
 from homeassistant.util import dt as dt_util
-from pybravia_connect import enum_values_from_capability
 
 from .const import (
     INPUT_OPTIONS,
@@ -36,6 +35,7 @@ from .entity import (
     entity_unique_id,
     get_device_info,
 )
+from .grpc.get_capabilities_response import enum_values_from_capability
 from .grpc_entity_registry import entity_spec_for_path
 from .grpc_value_normalize import (
     denormalize_for_exec,
@@ -48,8 +48,8 @@ if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
 
     from .bravia_grpc_client import BraviaGrpcClientAsync
+    from .grpc.client import NotifyStateUpdate
     from .grpc_mapping import GrpcTcpMapping
-    from .notify_state import NotifyStateUpdate
 
 _LOGGER = logging.getLogger(__name__)
 

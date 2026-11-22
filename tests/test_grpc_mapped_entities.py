@@ -180,8 +180,9 @@ def test_voice_zoom_level_number_spec_and_range(
 def test_mapped_number_omit_zero_and_capability_range(
     grpc_client: MagicMock, grpc_entry: MagicMock
 ) -> None:
-    from pybravia_connect import CapabilityMeta
-
+    from custom_components.bravia_quad.grpc.get_capabilities_response import (
+        CapabilityMeta,
+    )
     from custom_components.bravia_quad.grpc_mapped_entities import (
         BraviaGrpcMappedNumber,
         _number_range,
@@ -212,8 +213,10 @@ def test_dts_dialog_control_is_capability_ranged_number(
     grpc_client: MagicMock, grpc_entry: MagicMock
 ) -> None:
     from homeassistant.const import UnitOfSoundPressure
-    from pybravia_connect import CapabilityMeta
 
+    from custom_components.bravia_quad.grpc.get_capabilities_response import (
+        CapabilityMeta,
+    )
     from custom_components.bravia_quad.grpc_mapped_entities import (
         BraviaGrpcMappedNumber,
         _number_range,
@@ -311,11 +314,9 @@ def test_playback_command_false_availability_none_reason_is_available() -> None:
 
 
 def test_notify_cache_retains_reason_over_none_without_availability_true() -> None:
-    from custom_components.bravia_quad.bravia_connect_backend import (
-        BraviaConnectBackend,
-    )
+    from custom_components.bravia_quad.grpc.client import BraviaGrpcClient
 
-    client = BraviaConnectBackend()
+    client = BraviaGrpcClient("127.0.0.1")
     client.update_notify_cache(
         {"sound_setting.voice_zoom.unavailable_reason": "unsupported_tv"}
     )
@@ -332,11 +333,9 @@ def test_notify_cache_retains_reason_over_none_without_availability_true() -> No
 
 def test_bulk_getstates_true_none_does_not_clear_sticky_reason() -> None:
     """GetStates True+none must not defeat a known real reason (bulk scrub)."""
-    from custom_components.bravia_quad.bravia_connect_backend import (
-        BraviaConnectBackend,
-    )
+    from custom_components.bravia_quad.grpc.client import BraviaGrpcClient
 
-    client = BraviaConnectBackend()
+    client = BraviaGrpcClient("127.0.0.1")
     client.update_notify_cache(
         {"sound_setting.voice_zoom.unavailable_reason": "unsupported_tv"}
     )
@@ -354,11 +353,9 @@ def test_bulk_getstates_true_none_does_not_clear_sticky_reason() -> None:
 
 
 def test_apply_persisted_feature_unavailable_reasons_over_none_seed() -> None:
-    from custom_components.bravia_quad.bravia_connect_backend import (
-        BraviaConnectBackend,
-    )
+    from custom_components.bravia_quad.grpc.client import BraviaGrpcClient
 
-    client = BraviaConnectBackend()
+    client = BraviaGrpcClient("127.0.0.1")
     client.update_notify_cache(
         {
             "sound_setting.voice_zoom.availability": True,

@@ -12,6 +12,7 @@ from homeassistant.const import (
     SERVICE_TURN_ON,
     Platform,
 )
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
 
 from .conftest import get_entity_id_by_unique_id_suffix
@@ -110,6 +111,32 @@ async def test_power_switch_turn_off(
     )
 
     mock_bravia_quad_client.async_set_power.assert_called_once_with("off")
+
+
+@pytest.mark.usefixtures("init_integration_all")
+async def test_power_switch_turn_off_unacknowledged_raises(
+    hass: HomeAssistant,
+    mock_bravia_quad_client: MagicMock,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A power command the device does not acknowledge fails the service call."""
+    entity_id = get_entity_id_by_unique_id_suffix(entity_registry, "_power")
+    assert entity_id is not None
+    assert hass.states.get(entity_id).state == "on"
+
+    mock_bravia_quad_client.async_set_power.return_value = False
+
+    with pytest.raises(HomeAssistantError) as err:
+        await hass.services.async_call(
+            SWITCH_DOMAIN,
+            SERVICE_TURN_OFF,
+            {ATTR_ENTITY_ID: entity_id},
+            blocking=True,
+        )
+
+    assert err.value.translation_key == "command_failed"
+    assert err.value.translation_placeholders == {"command": "turn off"}
+    assert hass.states.get(entity_id).state == "on"
 
 
 @pytest.mark.usefixtures("init_integration")
