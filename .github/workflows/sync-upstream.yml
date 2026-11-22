@@ -1,0 +1,43 @@
+name: Sync upstream release
+
+on:
+  schedule:
+    - cron: "41 */6 * * *"
+  push:
+    branches:
+      - main
+    paths:
+      - .github/scripts/build-release.sh
+      - .github/workflows/sync-upstream.yml
+      - patches/**
+  workflow_dispatch:
+
+concurrency:
+  group: sync-upstream
+
+jobs:
+  build:
+    name: Build release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - run: .github/scripts/build-release.sh
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  keepalive:
+    # GitHub turns off a public repository's schedules after 60 days without
+    # commits. Enabling the workflow through the API restarts that count.
+    name: Keep the schedule enabled
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - run: gh api --method PUT "repos/$GITHUB_REPOSITORY/actions/workflows/sync-upstream.yml/enable"
+        env:
+          GH_TOKEN: ${{ github.token }}
